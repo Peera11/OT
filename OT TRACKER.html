@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <!-- viewport-fit=cover ให้แสดงเต็มจอบนมือถือ -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <title>OT TRACKER</title>
+  <style>
+/* =========================================================
+   OT TRACKER — style.css
+   Mobile-first / รองรับ Dark Mode อัตโนมัติตามระบบของเครื่อง
+   ========================================================= */
+
+/* ---------- สี (ธีมสว่าง) ---------- */
+:root {
+  --bg: #eef2f4;
+  --card: #ffffff;
+  --text: #17262b;
+  --muted: #667a82;
+  --line: #dde5e8;
+
+  --ot: #0f766e;        /* เขียวเข้ม = ทำ OT */
+  --ot-soft: #d5f0ec;
+  --no: #d9534f;        /* แดง = ไม่ทำ */
+  --no-soft: #fbe0de;
+  --accent: #0f766e;
+
+  --radius: 16px;
+  --font: system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", "Sukhumvit Set",
+          "Leelawadee UI", Tahoma, sans-serif;
+}
+
+/* ---------- สี (ธีมมืด) — แค่เปลี่ยนค่าตัวแปร ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1517;
+    --card: #172125;
+    --text: #e8f0f2;
+    --muted: #8ba0a8;
+    --line: #26343a;
+
+    --ot: #2dd4bf;
+    --ot-soft: #12413d;
+    --no: #f07a76;
+    --no-soft: #4a2423;
+    --accent: #2dd4bf;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+
+/* ---------- โครงหน้า ---------- */
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 14px
+           calc(32px + env(safe-area-inset-bottom, 0px));
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+}
+
+.section-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.icon-btn:active { background: var(--line); }
+
+/* ---------- การ์ดวันนี้ (ต้องเห็นปุ่มโดยไม่ต้องเลื่อน) ---------- */
+.today { padding: 18px 16px; }
+
+.today-month {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.today-date {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.question {
+  margin: 14px 0 12px;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.big-buttons {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;   /* ปุ่ม "ทำ OT" ใหญ่กว่า */
+  gap: 10px;
+}
+
+.big-btn {
+  min-height: 72px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.big-btn:active { transform: scale(0.98); }
+
+.big-btn.ot { background: var(--ot); color: #fff; }
+.big-btn.no { background: var(--no-soft); color: var(--no); border-color: var(--no); }
+
+@media (prefers-color-scheme: dark) {
+  .big-btn.ot { color: #06201d; }
+}
+
+.today-status {
+  min-height: 1.5em;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- สรุป ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+.stat-label { color: var(--muted); font-size: 0.85rem; }
+
+.stat:nth-child(1) .stat-value,
+.stat:nth-child(2) .stat-value,
+.stat:nth-child(3) .stat-value { color: var(--ot); }
+.stat:nth-child(4) .stat-value { color: var(--no); }
+
+/* ---------- ปฏิทิน ---------- */
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.cal-head .section-title { margin: 0; }
+
+.cal-weekdays,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-weekdays {
+  margin-bottom: 4px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.day {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-size: 0.85rem;
+}
+.day .num { line-height: 1.1; }
+.day .mark { font-size: 0.95rem; line-height: 1.1; min-height: 1.1em; }
+
+.day.ot { background: var(--ot-soft); }
+.day.no { background: var(--no-soft); }
+.day.today { border-color: var(--accent); font-weight: 700; }
+.day.empty { visibility: hidden; }
+
+/* ---------- ประวัติ ---------- */
+.history { list-style: none; margin: 0; padding: 0; }
+
+.history li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.history li:first-child { border-top: 0; }
+
+.history .info { flex: 1; min-width: 0; }
+.history .date { font-weight: 600; }
+.history .result.ot { color: var(--ot); }
+.history .result.no { color: var(--no); }
+
+.history .empty-text { color: var(--muted); padding: 6px 0; }
+
+.mini-btn {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  font-size: 0.9rem;
+}
+.mini-btn.del { color: var(--no); border-color: var(--no); }
+.mini-btn:active { background: var(--line); }
+
+.hint { margin: 10px 0 0; color: var(--muted); font-size: 0.8rem; text-align: center; }
+
+/* ---------- หน้าต่างป๊อปอัป (แก้ไข / ตั้งค่า) ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal[hidden] { display: none; }
+
+.sheet {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: 20px 20px 0 0;
+  background: var(--card);
+}
+.sheet h2 { margin: 0 0 14px; font-size: 1.1rem; }
+
+.segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+
+.seg {
+  min-height: 52px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+  font-weight: 600;
+}
+.seg.ot.active { border-color: var(--ot); background: var(--ot-soft); }
+.seg.no.active { border-color: var(--no); background: var(--no-soft); }
+
+.field { display: block; margin-bottom: 16px; }
+.field span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.9rem; }
+.field input,
+.field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.1rem;   /* 16px ขึ้นไป กันไม่ให้ iOS ซูมอัตโนมัติ */
+}
+.field[hidden] { display: none; }
+
+.sheet-actions { display: flex; gap: 8px; }
+.sheet-actions .btn { flex: 1; }
+.sheet-actions .btn[hidden] { display: none; }
+
+.btn {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: transparent;
+  font-weight: 600;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.danger { color: var(--no); border-color: var(--no); }
+
+@media (prefers-color-scheme: dark) {
+  .btn.primary { color: #06201d; }
+}
+
+/* ---------- ข้อความ "บันทึกแล้ว ✓" ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 12px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* เคารพผู้ใช้ที่ปิดแอนิเมชันในระบบ */
+@media (prefers-reduced-motion: reduce) {
+  .toast, .big-btn { transition: none; }
+}
+
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- หัวข้อสรุปรอบเงิน ---------- */
+.sum-title { text-align: center; }
+.sum-title .section-title { margin: 0; }
+.sum-range { margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+/* ---------- ข้อความอธิบายใต้ช่องตั้งค่า ---------- */
+.field .note { display: block; margin-top: 6px; color: var(--muted); font-size: 0.85rem; }
+
+/* ---------- ปุ่มยืนยันลบ ---------- */
+.btn.danger-fill { background: var(--no); border-color: var(--no); color: #fff; }
+@media (prefers-color-scheme: dark) {
+  .btn.danger-fill { color: #2a0b0a; }
+}
+
+</style>
+</head>
+<body>
+  <main class="app">
+
+    <!-- ===== แถบบน: ชื่อเว็บ + ปุ่มตั้งค่า ===== -->
+    <header class="topbar">
+      <h1>OT TRACKER</h1>
+      <button id="btn-settings" class="icon-btn" type="button" aria-label="ตั้งค่า">⚙️</button>
+    </header>
+
+    <!-- ===== หน้าแรก: ถามว่าวันนี้ทำ OT ไหม ===== -->
+    <section class="card today">
+      <p class="today-month" id="today-month"></p>
+      <p class="today-date" id="today-date"></p>
+      <h2 class="question">วันนี้ทำ OT ไหม?</h2>
+
+      <div class="big-buttons">
+        <button id="btn-ot" class="big-btn ot" type="button">✅ ทำ OT</button>
+        <button id="btn-no" class="big-btn no" type="button">❌ ไม่ทำ</button>
+      </div>
+
+      <!-- ข้อความยืนยัน / สถานะของวันนี้ -->
+      <p id="today-status" class="today-status" aria-live="polite"></p>
+    </section>
+
+    <!-- ===== สรุปประจำเดือน (ตามเดือนที่เปิดอยู่ในปฏิทิน) ===== -->
+    <section class="card">
+      <div class="cal-head">
+        <button id="sum-prev" class="icon-btn" type="button" aria-label="รอบก่อนหน้า">‹</button>
+        <div class="sum-title">
+          <h2 class="section-title" id="summary-title">สรุปรอบเงิน</h2>
+          <p class="sum-range" id="summary-range"></p>
+        </div>
+        <button id="sum-next" class="icon-btn" type="button" aria-label="รอบถัดไป">›</button>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-value" id="stat-days">0</span>
+          <span class="stat-label">วันที่ทำ OT</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-hours">0</span>
+          <span class="stat-label">ชั่วโมงรวม</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-money">0</span>
+          <span class="stat-label">เงิน OT (บาท)</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-no">0</span>
+          <span class="stat-label">วันที่ไม่ทำ OT</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ปฏิทินรายเดือน ===== -->
+    <section class="card">
+      <div class="cal-head">
+        <button id="cal-prev" class="icon-btn" type="button" aria-label="เดือนก่อนหน้า">‹</button>
+        <h2 class="section-title" id="cal-title"></h2>
+        <button id="cal-next" class="icon-btn" type="button" aria-label="เดือนถัดไป">›</button>
+      </div>
+      <div class="cal-weekdays" aria-hidden="true">
+        <span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <p class="hint">แตะที่วันในปฏิทินเพื่อเพิ่มหรือแก้ไข</p>
+    </section>
+
+    <!-- ===== ประวัติ ===== -->
+    <section class="card">
+      <h2 class="section-title">ประวัติ</h2>
+      <ul class="history" id="history"></ul>
+    </section>
+
+  </main>
+
+  <!-- ===== หน้าต่างแก้ไขรายการ ===== -->
+  <div class="modal" id="modal-edit" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+      <h2 id="edit-title">แก้ไข</h2>
+
+      <div class="segmented">
+        <button type="button" id="seg-ot" class="seg ot">✅ ทำ OT</button>
+        <button type="button" id="seg-no" class="seg no">❌ ไม่ทำ</button>
+      </div>
+
+      <div class="sheet-actions">
+        <button type="button" id="edit-delete" class="btn danger">ลบ</button>
+        <button type="button" id="edit-cancel" class="btn">ยกเลิก</button>
+        <button type="button" id="edit-save" class="btn primary">บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== หน้าต่างตั้งค่า ===== -->
+  <div class="modal" id="modal-settings" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h2 id="settings-title">ตั้งค่า</h2>
+
+      <label class="field">
+        <span>เงิน OT ต่อวัน (ทำ 3 ชม.) — บาท</span>
+        <input id="setting-pay" type="number" inputmode="decimal" min="0" step="1">
+      </label>
+
+      <label class="field">
+        <span>รอบเงินเริ่มวันที่</span>
+        <select id="setting-start"></select>
+        <small class="note" id="setting-cycle-note"></small>
+      </label>
+
+      <div class="sheet-actions">
+        <button type="button" id="settings-cancel" class="btn">ยกเลิก</button>
+        <button type="button" id="settings-save" class="btn primary">บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== หน้าต่างยืนยันการลบ (ใช้แทน confirm() ที่บางหน้าจอไม่ทำงาน) ===== -->
+  <div class="modal" id="modal-confirm" hidden>
+    <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="confirm-text">
+      <h2 id="confirm-text">ลบรายการนี้?</h2>
+      <div class="sheet-actions">
+        <button type="button" id="confirm-no" class="btn">ยกเลิก</button>
+        <button type="button" id="confirm-yes" class="btn danger-fill">ลบ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อความ "บันทึกแล้ว ✓" -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+/* =========================================================
+   OT TRACKER — script.js  (Vanilla JS + localStorage)
+
+   กติกา:
+   - ทำ OT 1 วัน = 3 ชั่วโมง (คงที่)
+   - เงิน OT = จำนวนวันที่ทำ OT x เงิน OT ต่อวัน (ผู้ใช้กำหนดเองใน Settings)
+   - สรุปเงินคิดเป็น "รอบ" เช่น 26 - 25 ของเดือนถัดไป (เลือกวันเริ่มรอบได้)
+
+   รูปแบบข้อมูลที่เก็บ:
+   {
+     otPay: 500,                      // เงิน OT ต่อวัน (ทำ 3 ชม.)
+     startDay: 26,                    // วันเริ่มรอบเงิน (1 - 28)
+     records: {
+       "2026-10-08": { status: "ot" },
+       "2026-10-06": { status: "no" }
+     }
+   }
+   ========================================================= */
+
+'use strict';
+
+/* ---------- ค่าคงที่ ---------- */
+const STORAGE_KEY = 'ot-tracker-v1';
+const OT_HOURS = 3;           // ทำ OT 1 วัน = 3 ชม.
+const DEFAULT_PAY = 500;      // ค่าเริ่มต้น แก้ได้ในหน้า Settings
+const DEFAULT_START_DAY = 26; // รอบเงินเริ่มวันที่ 26
+
+const MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+const MONTHS_SHORT = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
+                      'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+/* ---------- ตัวช่วยเลือก element ---------- */
+const $ = (id) => document.getElementById(id);
+
+/* ---------- state ---------- */
+let state = loadState();
+
+// เดือนที่กำลังดูในปฏิทิน
+const now = new Date();
+let viewYear = now.getFullYear();
+let viewMonth = now.getMonth();
+
+// รอบเงินที่กำลังดูในส่วนสรุป (เก็บเป็น "เดือนที่รอบนั้นเริ่ม")
+let sumYear, sumMonth;
+resetSummaryToCurrent();
+
+// ข้อมูลของหน้าต่างแก้ไข
+let editKey = null;        // วันที่ที่กำลังแก้ ("YYYY-MM-DD")
+let editStatus = 'ot';     // 'ot' หรือ 'no'
+
+// การกระทำที่รอผู้ใช้กดยืนยัน (เช่น ลบ)
+let confirmAction = null;
+
+/* =========================================================
+   1) localStorage
+   ========================================================= */
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+
+      // เงิน OT ต่อวัน (ข้อมูลเวอร์ชันเก่าเก็บเป็น "ต่อชั่วโมง" -> แปลงเป็นต่อวัน)
+      let pay = Number(data.otPay);
+      if (data.otPay === undefined || !(pay >= 0)) {
+        pay = data.rate !== undefined && Number(data.rate) >= 0
+          ? Number(data.rate) * OT_HOURS
+          : DEFAULT_PAY;
+      }
+
+      let startDay = Math.round(Number(data.startDay));
+      if (!(startDay >= 1 && startDay <= 28)) startDay = DEFAULT_START_DAY;
+
+      return {
+        otPay: pay,
+        startDay: startDay,
+        records: data.records && typeof data.records === 'object' ? data.records : {},
+      };
+    }
+  } catch (err) {
+    console.warn('อ่านข้อมูลไม่สำเร็จ ใช้ค่าเริ่มต้นแทน', err);
+  }
+  return { otPay: DEFAULT_PAY, startDay: DEFAULT_START_DAY, records: {} };
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (err) {
+    // เช่น โหมดส่วนตัวบางเบราว์เซอร์ที่ไม่ให้เขียน
+    showToast('บันทึกไม่สำเร็จ');
+  }
+}
+
+/* =========================================================
+   2) ตัวช่วยเรื่องวันที่
+   ========================================================= */
+
+const pad = (n) => String(n).padStart(2, '0');
+
+// Date -> "YYYY-MM-DD" (ใช้เวลาท้องถิ่น ไม่ใช่ UTC กันวันเพี้ยน)
+function toKey(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+// "YYYY-MM-DD" -> Date
+function fromKey(key) {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+// "8 ต.ค." (ถ้าไม่ใช่ปีนี้ จะต่อท้ายด้วยปี)
+function formatShort(key) {
+  const d = fromKey(key);
+  const base = `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]}`;
+  return d.getFullYear() === new Date().getFullYear() ? base : `${base} ${d.getFullYear()}`;
+}
+
+// "8 ต.ค. 2026"
+function formatFull(key) {
+  const d = fromKey(key);
+  return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+const formatNumber = (n) => Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+/* =========================================================
+   3) รอบเงิน (เช่น 26 - 25 ของเดือนถัดไป)
+   ========================================================= */
+
+// รอบเงินที่ "เริ่ม" ในเดือน (y, m) -> วันเริ่ม และ วันสิ้นสุด
+// เช่น startDay = 26, เดือน ก.ย. 2026 -> 26 ก.ย. ถึง 25 ต.ค.
+function periodRange(y, m) {
+  const start = new Date(y, m, state.startDay);
+  const end = new Date(y, m + 1, state.startDay - 1);  // วันก่อนวันเริ่มของเดือนถัดไป
+  return { start, end };
+}
+
+// วันที่ที่กำหนดอยู่ในรอบที่เริ่มเดือนไหน
+function periodStartMonthOf(date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  // ถ้ายังไม่ถึงวันเริ่มรอบของเดือนนี้ แปลว่าอยู่ในรอบที่เริ่มเดือนก่อน
+  if (date.getDate() < state.startDay) first.setMonth(first.getMonth() - 1);
+  return first;
+}
+
+function resetSummaryToCurrent() {
+  const p = periodStartMonthOf(new Date());
+  sumYear = p.getFullYear();
+  sumMonth = p.getMonth();
+}
+
+// "26 ก.ย. – 25 ต.ค. 2026"
+function formatRange(start, end) {
+  const s = `${start.getDate()} ${MONTHS_SHORT[start.getMonth()]}`;
+  const e = `${end.getDate()} ${MONTHS_SHORT[end.getMonth()]}`;
+  if (start.getFullYear() === end.getFullYear()) return `${s} – ${e} ${end.getFullYear()}`;
+  return `${s} ${start.getFullYear()} – ${e} ${end.getFullYear()}`;
+}
+
+/* =========================================================
+   4) การบันทึก / ลบ
+   ========================================================= */
+
+function setRecord(key, status) {
+  state.records[key] = { status: status };   // 'ot' หรือ 'no'
+  saveState();
+  renderAll();
+}
+
+function deleteRecord(key) {
+  delete state.records[key];
+  saveState();
+  renderAll();
+}
+
+/* =========================================================
+   5) แสดงผล (render)
+   ========================================================= */
+
+function renderAll() {
+  renderToday();
+  renderSummary();
+  renderCalendar();
+  renderHistory();
+}
+
+/* ---- หน้าแรก: เดือน/วันที่ปัจจุบัน + สถานะวันนี้ ---- */
+function renderToday() {
+  const today = new Date();
+  const key = toKey(today);
+
+  $('today-month').textContent = `${MONTHS[today.getMonth()]} ${today.getFullYear()}`;
+  $('today-date').textContent = formatFull(key);
+
+  const rec = state.records[key];
+  let text = 'ยังไม่ได้บันทึกวันนี้';
+  if (rec) {
+    text = rec.status === 'ot'
+      ? `บันทึกแล้ว: ✅ OT ${OT_HOURS} ชม.`
+      : 'บันทึกแล้ว: ❌ ไม่ทำ OT';
+  }
+  $('today-status').textContent = text;
+}
+
+/* ---- สรุปของรอบเงินที่เปิดอยู่ ---- */
+function renderSummary() {
+  const { start, end } = periodRange(sumYear, sumMonth);
+  const from = toKey(start);
+  const to = toKey(end);
+
+  let otDays = 0, noDays = 0;
+  for (const [key, rec] of Object.entries(state.records)) {
+    if (key < from || key > to) continue;      // นอกรอบนี้ (เทียบข้อความ YYYY-MM-DD ได้เลย)
+    if (rec.status === 'ot') otDays++;
+    else noDays++;
+  }
+
+  // ถ้าเป็นรอบปัจจุบัน เขียนว่า "สรุปรอบนี้"
+  const cur = periodStartMonthOf(new Date());
+  const isCurrent = cur.getFullYear() === sumYear && cur.getMonth() === sumMonth;
+  $('summary-title').textContent = isCurrent ? 'สรุปรอบนี้' : 'สรุปรอบเงิน';
+  $('summary-range').textContent = formatRange(start, end);
+
+  $('stat-days').textContent = otDays;
+  $('stat-hours').textContent = formatNumber(otDays * OT_HOURS);
+  $('stat-money').textContent = formatNumber(otDays * state.otPay);
+  $('stat-no').textContent = noDays;
+}
+
+/* ---- ปฏิทิน ---- */
+function renderCalendar() {
+  $('cal-title').textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+
+  const grid = $('cal-grid');
+  grid.innerHTML = '';
+
+  const firstWeekday = new Date(viewYear, viewMonth, 1).getDay();      // 0 = อาทิตย์
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const todayKey = toKey(new Date());
+
+  // ช่องว่างก่อนวันที่ 1
+  for (let i = 0; i < firstWeekday; i++) {
+    const blank = document.createElement('span');
+    blank.className = 'day empty';
+    grid.appendChild(blank);
+  }
+
+  // วันที่ 1 ... สิ้นเดือน
+  for (let day = 1; day <= daysInMonth; day++) {
+    const key = `${viewYear}-${pad(viewMonth + 1)}-${pad(day)}`;
+    const rec = state.records[key];
+
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'day';
+    if (rec) cell.classList.add(rec.status);   // ot / no
+    if (key === todayKey) cell.classList.add('today');
+    cell.dataset.key = key;
+
+    const mark = rec ? (rec.status === 'ot' ? '✅' : '❌') : '';
+    cell.innerHTML = `<span class="num">${day}</span><span class="mark">${mark}</span>`;
+    grid.appendChild(cell);
+  }
+}
+
+/* ---- ประวัติ (ใหม่ -> เก่า) ---- */
+function renderHistory() {
+  const list = $('history');
+  list.innerHTML = '';
+
+  const keys = Object.keys(state.records).sort().reverse();  // YYYY-MM-DD เรียงตัวอักษรได้เลย
+
+  if (keys.length === 0) {
+    list.innerHTML = '<li class="empty-text">ยังไม่มีประวัติ กด “ทำ OT” หรือ “ไม่ทำ” ด้านบนได้เลย</li>';
+    return;
+  }
+
+  for (const key of keys) {
+    const rec = state.records[key];
+    const result = rec.status === 'ot'
+      ? `<span class="result ot">✅ OT ${OT_HOURS} ชม.</span>`
+      : '<span class="result no">❌ ไม่ทำ OT</span>';
+
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="info"><span class="date">${formatShort(key)}</span> — ${result}</div>
+      <button type="button" class="mini-btn" data-action="edit" data-key="${key}">แก้ไข</button>
+      <button type="button" class="mini-btn del" data-action="delete" data-key="${key}">ลบ</button>
+    `;
+    list.appendChild(li);
+  }
+}
+
+/* =========================================================
+   6) ข้อความ "บันทึกแล้ว ✓"
+   ========================================================= */
+
+let toastTimer = null;
+function showToast(message) {
+  const toast = $('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 1600);
+}
+
+/* =========================================================
+   7) หน้าต่างยืนยัน (แทน confirm() ซึ่งบางหน้าจอ/เบราว์เซอร์ไม่ยอมให้ใช้)
+   ========================================================= */
+
+function askConfirm(message, yesLabel, action) {
+  $('confirm-text').textContent = message;
+  $('confirm-yes').textContent = yesLabel;
+  confirmAction = action;
+  $('modal-confirm').hidden = false;
+}
+
+function closeConfirm() {
+  $('modal-confirm').hidden = true;
+  confirmAction = null;
+}
+
+// ขอลบรายการของวันที่ key
+function askDelete(key, alsoCloseEdit) {
+  askConfirm(`ลบรายการ ${formatFull(key)} ?`, 'ลบ', () => {
+    deleteRecord(key);
+    if (alsoCloseEdit) closeModals();
+    showToast('ลบแล้ว');
+  });
+}
+
+/* =========================================================
+   8) หน้าต่างแก้ไข
+   ========================================================= */
+
+function openEdit(key) {
+  editKey = key;
+  const rec = state.records[key];
+
+  $('edit-title').textContent = `${rec ? 'แก้ไข' : 'เพิ่ม'} ${formatFull(key)}`;
+  $('edit-delete').hidden = !rec;                       // วันที่ยังไม่มีข้อมูล ไม่ต้องมีปุ่มลบ
+  setEditStatus(rec ? rec.status : 'ot');
+
+  $('modal-edit').hidden = false;
+}
+
+// สลับปุ่ม ทำ OT / ไม่ทำ ในหน้าต่างแก้ไข
+function setEditStatus(status) {
+  editStatus = status;
+  $('seg-ot').classList.toggle('active', status === 'ot');
+  $('seg-no').classList.toggle('active', status === 'no');
+}
+
+function saveEdit() {
+  setRecord(editKey, editStatus);
+  closeModals();
+  showToast('บันทึกแล้ว ✓');
+}
+
+/* =========================================================
+   9) หน้าต่างตั้งค่า
+   ========================================================= */
+
+// สร้างตัวเลือกวันเริ่มรอบ 1 - 28 (จำกัดไว้ที่ 28 เพื่อให้ทุกเดือนมีวันนั้น)
+function buildStartDayOptions() {
+  const select = $('setting-start');
+  for (let d = 1; d <= 28; d++) {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = `วันที่ ${d}`;
+    select.appendChild(opt);
+  }
+}
+
+// ข้อความอธิบายรอบเงิน เช่น "นับจากวันที่ 26 ถึงวันที่ 25 ของเดือนถัดไป"
+function updateCycleNote() {
+  const s = Number($('setting-start').value);
+  $('setting-cycle-note').textContent = s === 1
+    ? 'นับตามเดือนปกติ (วันที่ 1 ถึงสิ้นเดือน)'
+    : `นับจากวันที่ ${s} ถึงวันที่ ${s - 1} ของเดือนถัดไป`;
+}
+
+function openSettings() {
+  $('setting-pay').value = state.otPay;
+  $('setting-start').value = state.startDay;
+  updateCycleNote();
+  $('modal-settings').hidden = false;
+}
+
+function saveSettings() {
+  const raw = $('setting-pay').value.trim();
+  const pay = Number(raw);
+  if (raw === '' || !(pay >= 0)) {
+    showToast('ใส่จำนวนเงินให้ถูกต้อง');
+    return;
+  }
+  state.otPay = pay;
+  state.startDay = Number($('setting-start').value);
+  saveState();
+  resetSummaryToCurrent();   // เปลี่ยนวันเริ่มรอบแล้ว กลับไปดูรอบปัจจุบัน
+  renderAll();
+  closeModals();
+  showToast('บันทึกแล้ว ✓');
+}
+
+function closeModals() {
+  $('modal-edit').hidden = true;
+  $('modal-settings').hidden = true;
+  closeConfirm();
+}
+
+/* =========================================================
+   10) ผูกเหตุการณ์ (events)
+   ========================================================= */
+
+// ปุ่มใหญ่หน้าแรก: บันทึกของ "วันนี้" ทันที
+$('btn-ot').addEventListener('click', () => {
+  setRecord(toKey(new Date()), 'ot');
+  showToast('บันทึกแล้ว ✓');
+});
+
+$('btn-no').addEventListener('click', () => {
+  setRecord(toKey(new Date()), 'no');
+  showToast('บันทึกแล้ว ✓');
+});
+
+// เปลี่ยนรอบเงินในส่วนสรุป
+$('sum-prev').addEventListener('click', () => changeSummary(-1));
+$('sum-next').addEventListener('click', () => changeSummary(1));
+
+function changeSummary(delta) {
+  const d = new Date(sumYear, sumMonth + delta, 1);
+  sumYear = d.getFullYear();
+  sumMonth = d.getMonth();
+  renderSummary();
+}
+
+// เปลี่ยนเดือนในปฏิทิน
+$('cal-prev').addEventListener('click', () => changeMonth(-1));
+$('cal-next').addEventListener('click', () => changeMonth(1));
+
+function changeMonth(delta) {
+  const d = new Date(viewYear, viewMonth + delta, 1);
+  viewYear = d.getFullYear();
+  viewMonth = d.getMonth();
+  renderCalendar();
+}
+
+// แตะวันในปฏิทิน -> เปิดหน้าต่างแก้ไข/เพิ่ม
+$('cal-grid').addEventListener('click', (e) => {
+  const cell = e.target.closest('.day[data-key]');
+  if (cell) openEdit(cell.dataset.key);
+});
+
+// ปุ่มแก้ไข / ลบ ในประวัติ (event delegation)
+$('history').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const key = btn.dataset.key;
+
+  if (btn.dataset.action === 'edit') openEdit(key);
+  else if (btn.dataset.action === 'delete') askDelete(key, false);
+});
+
+// หน้าต่างแก้ไข
+$('seg-ot').addEventListener('click', () => setEditStatus('ot'));
+$('seg-no').addEventListener('click', () => setEditStatus('no'));
+$('edit-save').addEventListener('click', saveEdit);
+$('edit-cancel').addEventListener('click', closeModals);
+$('edit-delete').addEventListener('click', () => askDelete(editKey, true));
+
+// หน้าต่างตั้งค่า
+$('btn-settings').addEventListener('click', openSettings);
+$('settings-save').addEventListener('click', saveSettings);
+$('settings-cancel').addEventListener('click', closeModals);
+$('setting-start').addEventListener('change', updateCycleNote);
+
+// หน้าต่างยืนยัน
+$('confirm-no').addEventListener('click', closeConfirm);
+$('confirm-yes').addEventListener('click', () => {
+  const action = confirmAction;
+  closeConfirm();
+  if (action) action();
+});
+
+// แตะพื้นหลังมืดเพื่อปิดหน้าต่าง (หน้าต่างยืนยันปิดเฉพาะตัวมันเอง)
+document.querySelectorAll('.modal').forEach((modal) => {
+  modal.addEventListener('click', (e) => {
+    if (e.target !== modal) return;
+    if (modal.id === 'modal-confirm') closeConfirm();
+    else closeModals();
+  });
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!$('modal-confirm').hidden) closeConfirm();
+  else closeModals();
+});
+
+// ถ้าเปิดแอปค้างข้ามเที่ยงคืน แล้วกลับมาที่หน้าเว็บ ให้อัปเดตวันที่ใหม่
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) renderAll();
+});
+
+/* =========================================================
+   11) เริ่มทำงาน
+   ========================================================= */
+buildStartDayOptions();
+renderAll();
+
+</script>
+</body>
+</html>
